@@ -1,0 +1,22 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:gravity="center" android:padding="20dp">
+
+    <Button
+        android:id="@+id/btnMarketplace"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Enter Marketplace" />
+
+    <Button
+        android:id="@+id/btnScanProduct"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Scan Product QR" />
+
+    <Button
+        android:id="@+id/btnProductList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="My Products" />
+</LinearLayout>
