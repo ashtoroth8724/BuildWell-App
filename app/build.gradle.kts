@@ -58,5 +58,6 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation(libs.material) // Or the latest stable version
+    implementation(libs.androidyoutubeplayer.core)
 
 }
