@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<products>
+    <product id="coffee-machine">
+        <name>Coffee Machine XB320</name>
+        <instructions>
+            <step type="text">Unpack the coffee machine.</step>
+            <step type="video" videoId="dQw4w9WgXcQ">Introduction Video</step> <!-- The text here is optional, could be a title -->
+            <step type="text">Place the water tank.</step>
+            <step type="video" videoId="another_video_id">Water Tank Installation</step>
+            <step type="text">Brew your first cup!</step>
+        </instructions>
+    </product>
+    <!-- Add more products here -->
+</products>

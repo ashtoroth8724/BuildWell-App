@@ -1,148 +1,135 @@
 package com.example.buildwell_app
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.widget.ArrayAdapter
+import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
-import android.widget.ListView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-
-// Define a data class to hold product information
-data class ProductInfo(
-    val instructions: String,
-    val youtubeVideoId: String? = null // Nullable as not all products might have a video
-)
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import org.xmlpull.v1.XmlPullParserException
+import java.io.IOException
 
 class ProductListActivity : AppCompatActivity() {
 
-    private lateinit var initialMessageTextView: TextView
-    private lateinit var listViewProducts: ListView
-    private lateinit var btnDeleteInstructions: Button
+    private lateinit var productRecyclerView: RecyclerView
+    private lateinit var productAdapter: ProductAdapter
+    private lateinit var clearButton: Button
+    private lateinit var noProductsFoundTextView: TextView // Declare the TextView
     private lateinit var sharedPrefs: SharedPreferences
+    private val xmlProductParser = XmlProductParser()
 
-    private val SHARED_PREFS_NAME = "product_prefs"
-    private val KEY_SCANNED_PRODUCTS = "scanned_products" // Key for the set of scanned products
+    private val KEY_SCANNED_PRODUCTS = "scanned_products"
+    private val TAG = "ProductListActivity"
 
-    // Define your ALL possible products and their information
-    private val allProductData = mapOf(
-        "coffee-machine" to ProductInfo(
-            instructions = "Assembly Instructions for Coffee Machine:\n\n" +
-                    "1. Unpack all parts.\n" +
-                    "2. Attach the water reservoir.\n" +
-                    "3. Insert the filter.\n" +
-                    "4. Plug in and power on.\n" +
-                    "5. Brew your first cup!",
-            youtubeVideoId = "dQw4w9WgXcQ" // Example YouTube video ID (Rick Astley - Never Gonna Give You Up) - Replace with actual video IDs
-        ),
-        "chair" to ProductInfo(
-            instructions = "Assembly Instructions for Chair:\n\n" +
-                    "1. Identify all parts.\n" +
-                    "2. Attach the legs to the seat.\n" +
-                    "3. Secure with provided screws.\n" +
-                    "4. Attach the backrest.\n" +
-                    "5. Tighten all bolts.",
-            youtubeVideoId = "another_video_id" // Replace with an actual video ID
-        ),
-        "table" to ProductInfo(
-            instructions = "Assembly Instructions for Table:\n\n" +
-                    "1. Place the tabletop upside down.\n" +
-                    "2. Attach the legs to the tabletop.\n" +
-                    "3. Flip the table upright.\n" +
-                    "4. Ensure it is stable.",
-            youtubeVideoId = null // Example of a product without a video
-        )
-    )
-
-    // List to hold the names of products that have been scanned and will be displayed
-    private val displayedProductNames = mutableListOf<String>()
-    private lateinit var adapter: ArrayAdapter<String>
-
-    @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_product_list)
 
-        initialMessageTextView = findViewById(R.id.productDetailsTextView)
-        listViewProducts = findViewById(R.id.listViewProducts)
-        btnDeleteInstructions = findViewById(R.id.btnDeleteInstructions)
+        sharedPrefs = getSharedPreferences("AppPreferences", Context.MODE_PRIVATE)
 
-        sharedPrefs = getSharedPreferences(SHARED_PREFS_NAME, Context.MODE_PRIVATE)
+        productRecyclerView = findViewById(R.id.productListRecyclerView)
+        productRecyclerView.layoutManager = LinearLayoutManager(this)
 
-        // Load the scanned products from SharedPreferences and update the UI
-        loadAndDisplayScannedProducts()
+        clearButton = findViewById(R.id.clearScannedProductsButton)
+        noProductsFoundTextView = findViewById(R.id.noProductsFoundTextView) // Find the TextView
 
-        // Set an item click listener for the ListView
-        listViewProducts.setOnItemClickListener { _, _, position, _ ->
-            val selectedProductName = displayedProductNames[position]
-            val productInfo = allProductData[selectedProductName] // Get ProductInfo from the map
-
-            if (productInfo != null) {
-                val intent = Intent(this, InstructionDetailActivity::class.java).apply {
-                    putExtra("instructions", productInfo.instructions)
-                    putExtra("youtubeVideoId", productInfo.youtubeVideoId) // <--- Is the key correct?
-                }
-                startActivity(intent)
-            } else {
-                // This case should ideally not happen if product IDs are consistent
-                // and the selected product is in the allProductData map.
-                initialMessageTextView.text = "Product details not found for $selectedProductName."
-                initialMessageTextView.visibility = android.view.View.VISIBLE // Make sure the message is visible
-            }
+        clearButton.setOnClickListener {
+            clearScannedProducts()
         }
 
-        // Set up the delete button click listener
-        btnDeleteInstructions.setOnClickListener {
-            // Clear the set of scanned products in SharedPreferences
-            with(sharedPrefs.edit()) {
-                remove(KEY_SCANNED_PRODUCTS)
-                apply()
-            }
-            // Clear the in-memory list and update the UI
-            displayedProductNames.clear()
-            updateProductListUI()
+        loadScannedProducts()
+    }
+
+    private fun loadScannedProducts() {
+        val scannedProductIds = sharedPrefs.getStringSet(KEY_SCANNED_PRODUCTS, emptySet()) ?: emptySet()
+        val allProducts = getAllProductsFromXml(this)
+
+        val scannedProducts = allProducts.filter { product ->
+            scannedProductIds.contains(product.id)
+        }
+
+        // Update the adapter with the filtered list
+        productAdapter = ProductAdapter(scannedProducts) { product ->
+            val intent = Intent(this, InstructionDetailActivity::class.java)
+            intent.putExtra("productId", product.id)
+            startActivity(intent)
+        }
+        productRecyclerView.adapter = productAdapter
+
+        // --- Logic to show/hide the TextView and RecyclerView ---
+        if (scannedProducts.isEmpty()) {
+            noProductsFoundTextView.visibility = View.VISIBLE
+            productRecyclerView.visibility = View.GONE
+            clearButton.isEnabled = false // Optionally disable the clear button if nothing to clear
+        } else {
+            noProductsFoundTextView.visibility = View.GONE
+            productRecyclerView.visibility = View.VISIBLE
+            clearButton.isEnabled = true // Enable the clear button if there are products
+        }
+        // --- End of logic ---
+    }
+
+    private fun clearScannedProducts() {
+        val editor = sharedPrefs.edit()
+        editor.remove(KEY_SCANNED_PRODUCTS)
+        editor.apply()
+
+        // Reload the product list to show an empty list and the "no products" message
+        loadScannedProducts()
+    }
+
+    private fun getAllProductsFromXml(context: Context): List<Product> {
+        return try {
+            val inputStream = context.resources.openRawResource(R.raw.products)
+            xmlProductParser.parse(inputStream)
+        } catch (e: XmlPullParserException) {
+            Log.e(TAG, "Error parsing XML", e)
+            emptyList()
+        } catch (e: IOException) {
+            Log.e(TAG, "Error reading XML file", e)
+            emptyList()
+        } catch (e: Exception) {
+            Log.e(TAG, "An unexpected error occurred", e)
+            emptyList()
         }
     }
 
-    // Function to load scanned products and update the UI
-    private fun loadAndDisplayScannedProducts() {
-        // Read the set of scanned product IDs from SharedPreferences
-        val scannedProductsSet = sharedPrefs.getStringSet(KEY_SCANNED_PRODUCTS, emptySet()) ?: emptySet()
+    // Simple data class to represent a product (ensure this is available)
+    // data class Product(val id: String, val name: String, val instructions: List<ProductContent>)
 
-        // Clear the current displayed list
-        displayedProductNames.clear()
+    // Adapter for the RecyclerView (ensure this and its ViewHolder are available)
+    class ProductAdapter(private val productList: List<Product>, private val onItemClick: (Product) -> Unit) :
+        RecyclerView.Adapter<ProductAdapter.ProductViewHolder>() {
 
-        // Add only the names of scanned products that exist in our allProductData map
-        // This prevents displaying scanned IDs that don't have corresponding data
-        displayedProductNames.addAll(scannedProductsSet.filter { allProductData.containsKey(it) })
-
-        // Update the UI
-        updateProductListUI()
-    }
-
-
-    // Function to update the ListView and initial message visibility
-    @SuppressLint("SetTextI18n")
-    private fun updateProductListUI() {
-        // Initialize the adapter if not already, otherwise notify of data change
-        if (!::adapter.isInitialized) {
-            adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, displayedProductNames)
-            listViewProducts.adapter = adapter
-        } else {
-            adapter.notifyDataSetChanged()
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductViewHolder {
+            val view = LayoutInflater.from(parent.context)
+                .inflate(R.layout.item_product, parent, false)
+            return ProductViewHolder(view, onItemClick)
         }
 
-        // Show/hide the ListView and initial message based on whether there are products to display
-        if (displayedProductNames.isEmpty()) {
-            listViewProducts.visibility = android.view.View.GONE
-            initialMessageTextView.text = "No scanned products yet. Scan a QR code to add a product."
-            initialMessageTextView.visibility = android.view.View.VISIBLE
-        } else {
-            listViewProducts.visibility = android.view.View.VISIBLE
-            initialMessageTextView.visibility = android.view.View.GONE // Hide the initial message
+        override fun onBindViewHolder(holder: ProductViewHolder, position: Int) {
+            val product = productList[position]
+            holder.bind(product)
+        }
+
+        override fun getItemCount(): Int = productList.size
+
+        class ProductViewHolder(itemView: View, private val onItemClick: (Product) -> Unit) :
+            RecyclerView.ViewHolder(itemView) {
+
+            private val productNameTextView: TextView = itemView.findViewById(R.id.productNameTextView)
+
+            fun bind(product: Product) {
+                productNameTextView.text = product.name
+                itemView.setOnClickListener { onItemClick(product) }
+            }
         }
     }
 }

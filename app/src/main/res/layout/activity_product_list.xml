@@ -1,35 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp"
     tools:context=".ProductListActivity">
 
-    <!-- TextView to display detailed instructions (initially hidden or showing a default message) -->
-    <TextView
-        android:id="@+id/productDetailsTextView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Select a product from the list below to see instructions."
-        android:textSize="18sp"
-        android:paddingBottom="16dp"/>
-
-    <!-- ListView to display the list of available products -->
-    <ListView
-        android:id="@+id/listViewProducts"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"/>
-
-    <!-- Delete button -->
     <Button
-        android:id="@+id/btnDeleteInstructions"
+        android:id="@+id/clearScannedProductsButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Delete Saved Instructions"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="16dp"/>
+        android:text="Delete All Instructions"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="16dp"/> <!-- Add some margin from the bottom -->
 
-</LinearLayout>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/productListRecyclerView"
+        android:layout_width="368dp"
+        android:layout_height="588dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/clearScannedProductsButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.627"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.398"
+        tools:listitem="@layout/item_product" />
+
+    <TextView
+        android:id="@+id/noProductsFoundTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="No products scanned yet, please scan a product."
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/clearScannedProductsButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/productListRecyclerView"
+        app:layout_constraintVertical_bias="0.0"
+        tools:visibility="visible" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Available Products Instructions:"
+        app:layout_constraintBottom_toTopOf="@+id/productListRecyclerView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
