@@ -32,6 +32,7 @@ data class Product(
 sealed class ProductContent {
     data class TextInstruction(val text: String) : ProductContent()
     data class YoutubeVideo(val videoId: String) : ProductContent()
+    data class TitleInstruction(val title: String) : ProductContent()
 }
 
 
@@ -39,85 +40,112 @@ class InstructionDetailActivity : AppCompatActivity() {
 
     private lateinit var contentRecyclerView: RecyclerView
     private lateinit var contentAdapter: ProductContentAdapter
-    private val xmlProductParser = XmlProductParser() // Instance of the parser
+    private lateinit var instructionTitleTextView: TextView // Assuming you are using a custom title TextView
+    private val xmlProductParser = XmlProductParser()
 
+    private val TAG = "InstructionDetail" // Define a TAG for logging
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_instruction_detail)
 
+        // Assuming you are using a custom title TextView
+        instructionTitleTextView = findViewById(R.id.instructionTitleTextView)
+
         contentRecyclerView = findViewById(R.id.contentRecyclerView)
         contentRecyclerView.layoutManager = LinearLayoutManager(this)
-        contentAdapter = ProductContentAdapter(lifecycle) // Pass lifecycle to adapter
+        contentAdapter = ProductContentAdapter(lifecycle)
         contentRecyclerView.adapter = contentAdapter
 
         // Get the product ID from the intent
         val productId = intent.getStringExtra("productId")
+
+        Log.d(TAG, "Received product ID from Intent: $productId") // Log the received ID
 
         if (productId != null) {
             // Fetch product data from XML
             val product = getProductFromXml(this, productId)
 
             if (product != null) {
-                // Set the activity title to the product name
-                title = product.name
-                contentAdapter.submitList(product.instructions) // Submit the list to the adapter
+                Log.d(TAG, "Product found: ${product.name}") // Log if product is found
+                // Set the text of the custom title TextView
+                instructionTitleTextView.text = product.name
+                contentAdapter.submitList(product.instructions)
             } else {
-                // Handle product not found
-                title = "Product Not Found"
+                Log.w(TAG, "Product not found for ID: $productId") // Log if product is NOT found
+                // Handle product not found - set a default text in the TextView
+                instructionTitleTextView.text = "Product Not Found"
                 contentAdapter.submitList(listOf(ProductContent.TextInstruction("Product instructions not found for ID: $productId.")))
             }
         } else {
-            // Handle invalid product information
-            title = "Invalid Product"
+            Log.e(TAG, "Invalid product ID received from Intent.") // Log if ID is null
+            // Handle invalid product information - set a default text in the TextView
+            instructionTitleTextView.text = "Invalid Product"
             contentAdapter.submitList(listOf(ProductContent.TextInstruction("Invalid product information provided.")))
         }
     }
 
-    // Function to get a specific product from the XML data
-    private fun getProductFromXml(context: Context, productId: String): Product? { // Return type now correctly refers to the top-level Product
-        try {
-            // Open the XML resource file
-            val inputStream = context.resources.openRawResource(R.raw.products) // Assuming products.xml is in res/raw
-            val products = xmlProductParser.parse(inputStream) // Assuming parse returns List<Product>
-            // Find the product with the matching ID
-            return products.find { it.id == productId }
+    private fun getProductFromXml(context: Context, productId: String): Product? {
+        Log.d(TAG, "Attempting to fetch product from XML with ID: $productId") // Log the start of fetching
+        return try {
+            val inputStream = context.resources.openRawResource(R.raw.products)
+            Log.d(TAG, "Successfully opened products.xml raw resource.") // Log resource opening success
+
+            val products = xmlProductParser.parse(inputStream)
+            Log.d(TAG, "Finished parsing XML. Found ${products.size} products.") // Log after parsing
+
+            val foundProduct = products.find { it.id == productId }
+            if (foundProduct != null) {
+                Log.d(TAG, "Found product in parsed list with matching ID: ${foundProduct.id}") // Log if product is found in the list
+            } else {
+                Log.w(TAG, "Did not find product with ID '$productId' in the parsed list.") // Log if product is not found in the list
+                // Optional: Log the IDs of the products that were found to see what's available
+                Log.d(TAG, "Available product IDs in XML: ${products.map { it.id }}")
+            }
+            foundProduct
+
         } catch (e: XmlPullParserException) {
-            Log.e("InstructionDetail", "Error parsing XML", e)
-            // Handle parsing error (e.g., show an error message)
-            return null
+            Log.e(TAG, "XML Parsing Error: ${e.message}", e) // Log parsing errors
+            null
         } catch (e: IOException) {
-            Log.e("InstructionDetail", "Error reading XML file", e)
-            // Handle file reading error
-            return null
+            Log.e(TAG, "IO Error reading XML file: ${e.message}", e) // Log file reading errors
+            null
         } catch (e: Exception) {
-            Log.e("InstructionDetail", "An unexpected error occurred", e)
-            // Handle any other unexpected errors
-            return null
+            Log.e(TAG, "An unexpected error occurred during XML fetching: ${e.message}", e) // Log other errors
+            null
         }
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        // The YouTubePlayerViews within the RecyclerView items will be released by the adapter
-        // when the RecyclerView or its items are destroyed.
+        // ... (your existing onDestroy)
     }
+
 }
 
 // Adapter to handle different content types in the RecyclerView
+// Adapter to handle different content types in the RecyclerView
 class ProductContentAdapter(private val lifecycle: Lifecycle) :
-    ListAdapter<ProductContent, RecyclerView.ViewHolder>(ProductContentDiffCallback()) { // Now uses the top-level ProductContent
+    ListAdapter<ProductContent, RecyclerView.ViewHolder>(ProductContentDiffCallback()) {
 
+    // Define unique view types for each content type
     private val VIEW_TYPE_TEXT = 1
     private val VIEW_TYPE_VIDEO = 2
+    private val VIEW_TYPE_TITLE = 3 // New view type for titles
 
+
+    // Determine the view type based on the item's class
     override fun getItemViewType(position: Int): Int {
         return when (getItem(position)) {
-            is ProductContent.TextInstruction -> VIEW_TYPE_TEXT // Now uses the top-level ProductContent
-            is ProductContent.YoutubeVideo -> VIEW_TYPE_VIDEO // Now uses the top-level ProductContent
+            is ProductContent.TextInstruction -> VIEW_TYPE_TEXT
+            is ProductContent.YoutubeVideo -> VIEW_TYPE_VIDEO
+            is ProductContent.TitleInstruction -> VIEW_TYPE_TITLE // Return the new view type
+            // Add cases for other content types if you have them (e.g., ImageInstruction)
+            // is ProductContent.ImageInstruction -> VIEW_TYPE_IMAGE
         }
     }
 
+    // Create the appropriate ViewHolder based on the view type
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         return when (viewType) {
@@ -129,14 +157,27 @@ class ProductContentAdapter(private val lifecycle: Lifecycle) :
                 val view = inflater.inflate(R.layout.item_youtube_video, parent, false)
                 YoutubeVideoViewHolder(view, lifecycle) // Pass lifecycle to the ViewHolder
             }
-            else -> throw IllegalArgumentException("Invalid view type")
+            VIEW_TYPE_TITLE -> { // Handle the new title view type
+                val view = inflater.inflate(R.layout.item_text_title, parent, false) // Inflate the new layout
+                TitleInstructionViewHolder(view) // Create the new TitleInstructionViewHolder
+            }
+            // Add cases for other content types (e.g., ImageInstruction)
+            // VIEW_TYPE_IMAGE -> {
+            //     val view = inflater.inflate(R.layout.item_image_instruction, parent, false)
+            //     ImageInstructionViewHolder(view)
+            // }
+            else -> throw IllegalArgumentException("Invalid view type: $viewType")
         }
     }
 
+    // Bind the data to the correct ViewHolder
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
-            is TextInstructionViewHolder -> holder.bind(getItem(position) as ProductContent.TextInstruction) // Now uses the top-level ProductContent
-            is YoutubeVideoViewHolder -> holder.bind(getItem(position) as ProductContent.YoutubeVideo) // Now uses the top-level ProductContent
+            is TextInstructionViewHolder -> holder.bind(getItem(position) as ProductContent.TextInstruction)
+            is YoutubeVideoViewHolder -> holder.bind(getItem(position) as ProductContent.YoutubeVideo)
+            is TitleInstructionViewHolder -> holder.bind(getItem(position) as ProductContent.TitleInstruction) // Bind data for the new title type
+            // Add cases for other content types
+            // is ImageInstructionViewHolder -> holder.bind(getItem(position) as ProductContent.ImageInstruction)
         }
     }
 
@@ -148,12 +189,22 @@ class ProductContentAdapter(private val lifecycle: Lifecycle) :
         }
     }
 
+    // Ensure YouTubePlayerViews are properly released when items are recycled
+    override fun onViewRecycled(holder: RecyclerView.ViewHolder) {
+        super.onViewRecycled(holder)
+        if (holder is YoutubeVideoViewHolder) {
+            // Optional: Reset the player or state if needed upon recycling
+            // holder.resetPlayerState() // You might need to add this method to YoutubeVideoViewHolder
+        }
+    }
+
+
     // ViewHolder for text instructions
     class TextInstructionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         // Assuming you have a TextView with ID instructionTextView in item_text_instruction.xml
         private val instructionTextView: TextView = itemView.findViewById(R.id.instructionTextView)
 
-        fun bind(textInstruction: ProductContent.TextInstruction) { // Now uses the top-level ProductContent
+        fun bind(textInstruction: ProductContent.TextInstruction) {
             instructionTextView.text = textInstruction.text
         }
     }
@@ -178,45 +229,46 @@ class ProductContentAdapter(private val lifecycle: Lifecycle) :
                     }
                 }
 
-                override fun onCurrentSecond(youTubePlayer: YouTubePlayer, second: Float) {
-                    // Optional: Implement if you need to track playback progress
-                }
-
-                override fun onVideoDuration(youTubePlayer: YouTubePlayer, duration: Float) {
-                    // Optional: Implement if you need to know the video duration
-                }
-
-                override fun onVideoLoadedFraction(youTubePlayer: YouTubePlayer, loadedFraction: Float) {
-                    // Optional: Implement if you need to track loading progress
-                }
-
-                override fun onVideoId(youTubePlayer: YouTubePlayer, videoId: String) {
-                    // Optional: Called when a video is loaded with its ID
-                }
-
-
-                // ... other AbstractYouTubePlayerListener methods if needed
+                // ... other AbstractYouTubePlayerListener methods you might need
+                // (onCurrentSecond, onVideoDuration, onVideoLoadedFraction, onVideoId, etc.)
             })
         }
 
         fun bind(youtubeVideo: ProductContent.YoutubeVideo) {
             currentVideoId = youtubeVideo.videoId
             // If the player is already ready, cue the video
-            youTubePlayer?.cueVideo(currentVideoId!!, 0f) // Use cueVideo to load without autoplaying initially
+            // Check if youTubePlayer is not null before calling cueVideo
+            if (youTubePlayer != null && currentVideoId != null) {
+                youTubePlayer?.cueVideo(currentVideoId!!, 0f) // Use cueVideo to load without autoplaying initially
+            }
         }
 
         fun releasePlayer() {
             youtubePlayerView.release()
         }
     }
+
+    // New ViewHolder for the title
+    class TitleInstructionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        // Assuming you have a TextView with ID titleTextView in item_text_title.xml
+        private val titleTextView: TextView = itemView.findViewById(R.id.titleTextView)
+
+        fun bind(titleInstruction: ProductContent.TitleInstruction) {
+            titleTextView.text = titleInstruction.title
+        }
+    }
+
     // DiffUtil callback for ProductContent
     class ProductContentDiffCallback : DiffUtil.ItemCallback<ProductContent>() {
         override fun areItemsTheSame(oldItem: ProductContent, newItem: ProductContent): Boolean {
-            // Assuming you have a unique identifier for each content item if needed for more complex scenarios.
-            // For now, we can compare based on content type and core identifier (text or videoId).
+            // Compare items based on their unique properties (if they had them)
+            // For simplicity, we can compare based on type and core content for now.
             return when {
                 oldItem is ProductContent.TextInstruction && newItem is ProductContent.TextInstruction -> oldItem.text == newItem.text
                 oldItem is ProductContent.YoutubeVideo && newItem is ProductContent.YoutubeVideo -> oldItem.videoId == newItem.videoId
+                oldItem is ProductContent.TitleInstruction && newItem is ProductContent.TitleInstruction -> oldItem.title == newItem.title // Compare titles
+                // Add cases for other content types
+                // oldItem is ProductContent.ImageInstruction && newItem is ProductContent.ImageInstruction -> oldItem.imageUrl == newItem.imageUrl
                 else -> false // Different types are never the same item
             }
         }

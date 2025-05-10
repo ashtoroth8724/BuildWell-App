@@ -27,13 +27,11 @@ class XmlProductParser {
     @Throws(XmlPullParserException::class, IOException::class)
     private fun readProducts(parser: XmlPullParser): List<Product> {
         val products = mutableListOf<Product>()
-
         parser.require(XmlPullParser.START_TAG, ns, "products")
         while (parser.next() != XmlPullParser.END_TAG) {
             if (parser.eventType != XmlPullParser.START_TAG) {
                 continue
             }
-            // Starts by looking for the entry tag
             if (parser.name == "product") {
                 products.add(readProduct(parser))
             } else {
@@ -46,80 +44,68 @@ class XmlProductParser {
     @Throws(XmlPullParserException::class, IOException::class)
     private fun readProduct(parser: XmlPullParser): Product {
         parser.require(XmlPullParser.START_TAG, ns, "product")
-        var productId: String = ""
-        var productName: String = ""
+        val id = parser.getAttributeValue(null, "id") ?: ""
+        var name = ""
         var instructions: List<ProductContent> = emptyList()
-
-        productId = parser.getAttributeValue(ns, "id")
 
         while (parser.next() != XmlPullParser.END_TAG) {
             if (parser.eventType != XmlPullParser.START_TAG) {
                 continue
             }
             when (parser.name) {
-                "name" -> productName = readText(parser, "name")
+                "name" -> name = readTag(parser, "name")
                 "instructions" -> instructions = readInstructions(parser)
                 else -> skip(parser)
             }
         }
-        // Return a new Product object including the instructions list
-        return Product(productId, productName, instructions)
+        return Product(id, name, instructions)
     }
 
     @Throws(XmlPullParserException::class, IOException::class)
     private fun readInstructions(parser: XmlPullParser): List<ProductContent> {
         val instructions = mutableListOf<ProductContent>()
-
         parser.require(XmlPullParser.START_TAG, ns, "instructions")
         while (parser.next() != XmlPullParser.END_TAG) {
-            if (parser.eventType != XmlPullParser.START_TAG) {
-                continue
-            }
-            when (parser.name) {
-                "step" -> instructions.add(readStep(parser))
-                else -> skip(parser)
+            if (parser.eventType != XmlPullParser.START_TAG) continue
+            if (parser.name == "step") {
+                val type = parser.getAttributeValue(null, "type")
+                val videoId = parser.getAttributeValue(null, "videoId") // Optional
+                val text = readText(parser)
+
+                when (type) {
+                    "text" -> instructions.add(ProductContent.TextInstruction(text))
+                    "title" -> instructions.add(ProductContent.TitleInstruction(text))
+                    "video" -> {
+                        if (videoId != null) {
+                            instructions.add(ProductContent.YoutubeVideo(videoId))
+                        }
+                    }
+                    else -> skip(parser)
+                }
+            } else {
+                skip(parser)
             }
         }
         return instructions
     }
 
     @Throws(XmlPullParserException::class, IOException::class)
-    private fun readStep(parser: XmlPullParser): ProductContent {
-        parser.require(XmlPullParser.START_TAG, ns, "step")
-        val stepType = parser.getAttributeValue(ns, "type")
-        var productContent: ProductContent? = null
-
-        when (stepType) {
-            "text" -> {
-                val text = readText(parser, "step")
-                productContent = ProductContent.TextInstruction(text)
-            }
-            "video" -> {
-                val videoId = parser.getAttributeValue(ns, "videoId")
-                // Optionally read the text content for a video title
-                val videoTitle = readText(parser, "step") // Read the text within the step tag
-                productContent = ProductContent.YoutubeVideo(videoId) // We'll stick to videoId for now
-            }
-            else -> skip(parser) // Skip unknown step types
-        }
-
-        parser.require(XmlPullParser.END_TAG, ns, "step")
-        return productContent ?: throw XmlPullParserException("Invalid step type or missing content")
+    private fun readTag(parser: XmlPullParser, tagName: String): String {
+        parser.require(XmlPullParser.START_TAG, ns, tagName)
+        val result = readText(parser)
+        parser.require(XmlPullParser.END_TAG, ns, tagName)
+        return result
     }
 
-
     @Throws(IOException::class, XmlPullParserException::class)
-    private fun readText(parser: XmlPullParser, tagName: String): String {
-        parser.require(XmlPullParser.START_TAG, ns, tagName)
+    private fun readText(parser: XmlPullParser): String {
         var result = ""
         if (parser.next() == XmlPullParser.TEXT) {
             result = parser.text
             parser.nextTag()
         }
-        parser.require(XmlPullParser.END_TAG, ns, tagName)
         return result
     }
-
 
     @Throws(XmlPullParserException::class, IOException::class)
     private fun skip(parser: XmlPullParser) {
