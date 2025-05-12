@@ -5,57 +5,58 @@
         <instructions>
             <!-- Assembly Instructions -->
             <step type="title">Assembly Instructions</step>
-            <step type="text">Step 1: Locate the bottom casing of the coffee machine.</step>
-            <step type="text">Step 2: Carefully place the rubber sealing ring into the designated groove in the bottom casing. Ensure it sits flush and is not twisted.</step>
-            <step type="text">Step 3: Position the bottom plate over the rubber ring, aligning any screw holes. Press down gently to secure the ring and the plate within the bottom casing.</step>
-            <step type="text">Step 4: Use the provided screws to fix the bottom plate to the bottom casing. Tighten the screws evenly, but do not overtighten.</step>
+            <step type="text">Step 1: Locate the bottom casing (Part 8 - Casing bottom). Check the part number label on the underside.</step>
+            <step type="text">Step 2: Carefully place the rubber sealing ring (Part 2 - O-ring) into the designated groove in the bottom casing. Ensure it sits flush and is not twisted.</step>
+            <step type="text">Step 3: Position the heater plater (Part 7 - Heater plater) over the O-ring, aligning any screw holes. Press down gently to secure the ring and the plate within the bottom casing.</step>
+            <step type="text">Step 4: Use the provided screws to fix the heater plater to the casing bottom. Tighten the screws evenly, but do not overtighten.</step>
+
+            <step type="title">Coffee Pot Assembly</step>
+            <step type="text">Step 5: Place the metallic retaining ring (Part 13 - Retaining ring pot) around the top edge of the glass bowl (Part 9 - Glass bowl). Ensure it fits securely and evenly.</step>
+            <step type="text">Step 6: Align the pot handle (Part 14 - Pot handle) with the holes on the metallic ring.</step>
+            <step type="text">Step 7: Secure the pot handle to the ring using the provided screws. Tighten them firmly, but avoid over-tightening to prevent cracking the glass.</step>
 
             <step type="title">Heating Element And Electronics Assembly</step>
-            <!-- Note: Step 5 corresponds to "assemble the heating element with the electronic parts" -->
-            <step type="text">Step 5: This step involves connecting the heating element to the electronic components. Refer to the detailed diagram in the user manual for the correct wiring connections. (This step is not intended for video demonstration).</step>
-            <step type="text">Step 6: Attach the rubber tubes to the inlet and outlet connections of the heating element. Ensure a snug fit to prevent leaks.</step>
+            <step type="text">Step 8: Connect the heater (Part 11 - Heater) to the electronic components. Refer to the detailed wiring diagram. Important: Remove the identification sticker before installing this heated part.</step>
+            <step type="text">Step 9: Attach the rubber tubes to the inlet and outlet connections of the heater. Ensure a snug fit to prevent leaks.</step>
 
             <step type="title">Water Tank and Tubing Installation</step>
-            <step type="text">Step 7: Place the water tank onto the designated area on the base of the coffee machine. Align any mounting points.</step>
-            <step type="text">Step 8: Secure the water tank by tightening the retaining screw(s) if present.</step>
-            <step type="text">Step 9: Connect the other ends of the rubber tubes from the heating element to the corresponding inlets on the water tank. Pay attention to which tube connects to which port.</step>
-            <step type="text">Step 10: Route the rubber tubes neatly and place them onto the bottom plate, ensuring they are not pinched or kinked. Secure them with clips or guides if provided, and screw down the bottom plate firmly.</step>
-            <step type="text">Step 11: Insert the long intake tube vertically into the middle opening within the water tank.</step>
-            <step type="text">Step 12: Place the water path assembly on top of the long intake tube and clip it securely onto the surface of the water tank.</step>
+            <step type="text">Step 10: Place the reservoir (Part 10 - Reservoir) onto the designated area on the base. Align any mounting points. Confirm the part number if unsure.</step>
+            <step type="text">Step 11: Secure the reservoir by tightening the retaining screw(s) if present.</step>
+            <step type="text">Step 12: Connect the other ends of the rubber tubes from the heater to the corresponding inlets on the reservoir. Match tubing to ports as shown in the diagram.</step>
+            <step type="text">Step 13: Route the rubber tubes neatly and place them onto the heater plater. Ensure they are not pinched or kinked. Secure with clips or guides if provided, then fasten down the heater plater again.</step>
+            <step type="text">Step 14: Insert the tube in reservoir (Part 1 - Tube in reservoir) vertically into the middle opening within the reservoir.</step>
+            <step type="text">Step 15: Place the sprinkler (Part 3 - Sprinkler) on top of the intake tube and clip it securely to the reservoir surface.</step>
 
             <step type="title">Filter and Cover Installation</step>
-            <step type="text">Step 13: Place the coffee filter (permanent or paper) into the filter holder.</step>
-            <step type="text">Step 14: Position the filter holder assembly onto the water tank.</step>
-            <step type="text">Step 15: Carefully place the top cover of the coffee machine into position and snap it into place.</step>
-            <step type="text">Step 16: Add the water tank lid/cover to the water tank opening.</step>
+            <step type="text">Step 16: Place the coffee filter into the filter holder (Part 12 - Filter holder).</step>
+            <step type="text">Step 17: Position the filter holder assembly onto the reservoir.</step>
+            <step type="text">Step 18: Carefully place the filter cap (Part 6 - Filter cap) into position and snap it into place.</step>
+            <step type="text">Step 19: Add the reservoir cap (Part 5 - Reservoir cap) to the reservoir opening.</step>
 
             <step type="title">Brewing Your First Cup</step>
-            <step type="text">Step 17: Add your desired amount of coffee grounds to the filter.</step>
-            <step type="text">Step 18: Fill the water tank with fresh water.</step>
-            <step type="text">Step 19: Close all covers and ensure they are properly sealed.</step>
-            <step type="text">Step 20: Plug the coffee maker into a power outlet.</step>
-            <step type="text">Step 21: Press the brew button and wait for your coffee to be ready.</step>
-            <step type="text">Step 22: Enjoy your freshly brewed coffee!</step>
+            <step type="text">Step 20: Add your desired amount of coffee grounds to the filter.</step>
+            <step type="text">Step 21: Fill the reservoir with fresh water.</step>
+            <step type="text">Step 22: Close all covers and ensure they are properly sealed.</step>
+            <step type="text">Step 23: Plug the coffee maker into a power outlet.</step>
+            <step type="text">Step 24: Press the brew button and wait for your coffee to be ready.</step>
+            <step type="text">Step 25: Enjoy your freshly brewed coffee!</step>
 
             <!-- How does your machine work? -->
-
             <step type="title">How does your machine work?</step>
             <step type="video" videoId="ce22H2-0xh4">How Do Drip Coffee Machines Work? - Making Coffee Explained</step>
 
             <!-- Repair Instructions: Heating Element Replacement -->
             <step type="title">Repair: Heating Element Replacement</step>
             <step type="text">Step 1: ENSURE THE COFFEE MACHINE IS UNPLUGGED FROM THE POWER OUTLET AND HAS COOLED DOWN COMPLETELY.</step>
-            <step type="text">Step 2: Empty the water tank and remove any residual water.</step>
-            <step type="text">Step 3: Remove the top cover and bottom casing by unscrewing the retaining screws. Gently pry apart the casing sections to access internal components. Be cautious not to damage clips or wiring.</step>
-            <step type="text">Step 4: Locate the heating element. It is typically a metal component with electrical connections and tube connections.</step>
-            <step type="text">Step 5: Disconnect the rubber tubes connected to the heating element.</step>
-            <step type="text">Step 6: Disconnect the electrical connections to the heating element. Take a photo or make a diagram of the wiring before disconnecting.</step>
-            <step type="text">Step 7: Remove the heating element from its mounting.</step>
-            <step type="text">Step 8: Install the new heating element in the reverse order: Mount the new heating element, reconnect electrical connections (referencing your diagram/photo), and reattach the rubber tubes.</step>
-            <step type="text">Step 9: Reassemble the casing by aligning and snapping parts back together and reinstalling the screws securely.</step>
+            <step type="text">Step 2: Empty the reservoir and remove any residual water.</step>
+            <step type="text">Step 3: Remove the filter cap, top cover, and casing bottom by unscrewing the retaining screws. Gently pry apart casing sections. Do not force plastic parts.</step>
+            <step type="text">Step 4: Locate the heater (Part 11 - Heater). Important: Remove any identification sticker before continuing with heated parts.</step>
+            <step type="text">Step 5: Disconnect the rubber tubes from the heater.</step>
+            <step type="text">Step 6: Disconnect the electrical connections to the heater. Take a photo or make a diagram of the wiring first.</step>
+            <step type="text">Step 7: Remove the heater from its mounting.</step>
+            <step type="text">Step 8: Install the new heater in the reverse order: Mount the new heater, reconnect electrical connections (referencing your diagram/photo), and reattach the rubber tubes.</step>
+            <step type="text">Step 9: Reassemble the casing by aligning and snapping parts back together and reinstalling screws.</step>
             <step type="text">Step 10: Test the coffee machine with water to check for leaks and proper heating.</step>
-
         </instructions>
     </product>
-    <!-- Add more products here -->
 </products>
