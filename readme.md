@@ -33,7 +33,7 @@ If you want to build the app from the source code, you will need Android Studio.
 
 1.  Clone the repository:
 ```
-bash git clone YOUR_GITHUB_REPO_URL_HERE
+bash git clone https://github.com/ashtoroth8724/BuildWell-App.git
 ```
 
 2.  Open the project in Android Studio.
