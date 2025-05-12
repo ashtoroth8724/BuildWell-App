@@ -40,21 +40,7 @@
             <!-- How does your machine work? -->
 
             <step type="title">How does your machine work?</step>
-            <step type="video" videoId="ce22H2-0xh4">How Do Drip Coffee Machines Work? - Making Coffee Explained</step>
-
-            <!-- Repair Instructions: Pump Replacement -->
-            <step type="title">Repair: Pump Replacement</step>
-            <step type="text">Step 1: UNPLUG THE COFFEE MACHINE FROM THE POWER OUTLET before starting any repair work.</step>
-            <step type="text">Step 2: Empty the water tank and remove any residual water.</step>
-            <step type="text">Step 3: Locate and remove the screws holding the bottom casing and/or back panel in place.</step>
-            <step type="text">Step 4: Carefully remove the casing to access the internal components.</step>
-            <step type="text">Step 5: Identify the water pump. It is usually a small, cylindrical component connected to rubber tubes.</step>
-            <step type="text">Step 6: Disconnect the rubber tubes from the pump. Be prepared for a small amount of water to leak out.</step>
-            <step type="text">Step 7: Disconnect any electrical connections to the pump. Note the wiring configuration if necessary.</step>
-            <step type="text">Step 8: Remove the pump from its mounting bracket or location.</step>
-            <step type="text">Step 9: Install the new pump in the reverse order: Mount the new pump, reconnect electrical connections, and reattach the rubber tubes.</step>
-            <step type="text">Step 10: Reassemble the casing, ensuring all screws are replaced and tightened.</step>
-            <step type="text">Step 11: Test the coffee machine with water to check for leaks and proper pump operation.</step>
+            <step type="video" videoId="ce22H2-0xh4">How Do Drip Coffee Machines Work? - Making Coffee Explained</ste>p
 
             <!-- Repair Instructions: Heating Element Replacement -->
             <step type="title">Repair: Heating Element Replacement</step>
