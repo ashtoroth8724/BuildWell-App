@@ -40,19 +40,19 @@
             <!-- How does your machine work? -->
 
             <step type="title">How does your machine work?</step>
-            <step type="video" videoId="ce22H2-0xh4">How Do Drip Coffee Machines Work? - Making Coffee Explained</ste>p
+            <step type="video" videoId="ce22H2-0xh4">How Do Drip Coffee Machines Work? - Making Coffee Explained</step>
 
             <!-- Repair Instructions: Heating Element Replacement -->
             <step type="title">Repair: Heating Element Replacement</step>
             <step type="text">Step 1: ENSURE THE COFFEE MACHINE IS UNPLUGGED FROM THE POWER OUTLET AND HAS COOLED DOWN COMPLETELY.</step>
             <step type="text">Step 2: Empty the water tank and remove any residual water.</step>
-            <step type="text">Step 3: Remove the casing as described in the pump replacement instructions.</step>
+            <step type="text">Step 3: Remove the top cover and bottom casing by unscrewing the retaining screws. Gently pry apart the casing sections to access internal components. Be cautious not to damage clips or wiring.</step>
             <step type="text">Step 4: Locate the heating element. It is typically a metal component with electrical connections and tube connections.</step>
             <step type="text">Step 5: Disconnect the rubber tubes connected to the heating element.</step>
             <step type="text">Step 6: Disconnect the electrical connections to the heating element. Take a photo or make a diagram of the wiring before disconnecting.</step>
             <step type="text">Step 7: Remove the heating element from its mounting.</step>
             <step type="text">Step 8: Install the new heating element in the reverse order: Mount the new heating element, reconnect electrical connections (referencing your diagram/photo), and reattach the rubber tubes.</step>
-            <step type="text">Step 9: Reassemble the casing.</step>
+            <step type="text">Step 9: Reassemble the casing by aligning and snapping parts back together and reinstalling the screws securely.</step>
             <step type="text">Step 10: Test the coffee machine with water to check for leaks and proper heating.</step>
 
         </instructions>
