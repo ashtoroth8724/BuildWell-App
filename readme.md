@@ -66,7 +66,7 @@ graph TD
     H --> K[View Product Instructions]
     C -->|Click Product List Button| I[ProductListActivity]
     I --> J{ProductListActivity Displayed}
-    J --> L[View Product List]
+    J --> L[View Product List] -->|Click Product Button| G
 
 ```
 **Explanation of the Flowchart:**
